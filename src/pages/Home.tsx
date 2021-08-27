@@ -1,7 +1,4 @@
-import { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
-
-import { auth, firebase } from '../services/firebase'
 
 import illustrationImg from '../assets/images/illustration.svg';
 import logoImg from '../assets/images/logo.svg';
@@ -10,24 +7,18 @@ import googleIconImg from '../assets/images/google-icon.svg';
 import '../styles/auth.scss';
 import { Button } from '../components/Button';
 
-import { TestContext } from '../App'
+import { useAuth } from '../hooks/useAuth';
 
 export function Home() {
     const history = useHistory();
-    const value = useContext(TestContext)
+    const { user, signInWithGoogle } = useAuth();
 
-    function handleCreateRoom() {
-        console.log('aqui')
-        const provider = new firebase.auth.GoogleAuthProvider();
+    async function handleCreateRoom() {
+        if (!user) {
+            await signInWithGoogle();
+        }
 
-        auth.signInWithPopup(provider).then(result => {
-            console.log(result)
-            // history.push('/rooms/new');
-        })
-            .catch(function (error) {
-                console.log(process.env.REACT_APP_API_KEY)
-                console.log(error)
-            })
+        history.push('/rooms/new');
     }
 
     return (
